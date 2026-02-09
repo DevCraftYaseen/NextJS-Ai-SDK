@@ -1,8 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #F5F4EF;
+  --foreground: #2D2B28;
+  --surface: #EEECE2;
+  --surface-raised: #FFFFFF;
+  --text-primary: #1A1815;
+  --text-secondary: #6B6560;
+  --text-tertiary: #9B9590;
+  --accent: #C35A28;
+  --accent-hover: #A84B20;
+  --accent-light: #F4E8E0;
+  --border: #E5E2D9;
+  --border-light: #EDEAE3;
+  --error: #C43528;
+  --error-light: #FEF2F2;
 }
 
 @theme inline {
@@ -10,17 +22,103 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-light: var(--accent-light);
+  --color-border: var(--border);
+  --color-border-light: var(--border-light);
+  --color-error: var(--error);
+  --color-error-light: var(--error-light);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+}
+
+/* ===== Smooth Animations ===== */
+@keyframes fade-in-up {
+  0% { opacity: 0; transform: translateY(12px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+@keyframes slide-in {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes stream-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* ===== Utility Animation Classes ===== */
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out forwards;
+}
+
+.animate-slide-in {
+  animation: slide-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-pulse-dot {
+  animation: pulse-dot 1.4s ease-in-out infinite;
+}
+
+.animate-stream-in {
+  animation: stream-in 0.3s ease-out forwards;
+}
+
+/* ===== Scrollbar ===== */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}
+
+/* ===== Selection ===== */
+::selection {
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+/* ===== Smooth transitions for interactive elements only ===== */
+/* NOTE: Previously this was applied to *, *::before, *::after which caused
+   layout thrashing during streaming — every text chunk update triggered
+   transition recalculations on ALL elements. Now scoped to only interactive
+   elements (buttons, inputs, links, nav items) where transitions matter. */
+a, button, input, textarea, select, nav, [role="button"] {
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
 }
