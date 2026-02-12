@@ -54,6 +54,12 @@ export default function RootLayout({
               >
                 Stream
               </Link>
+              <Link
+                href="/ui/chat"
+                className="rounded-lg px-3.5 py-1.5 text-sm font-medium text-text-secondary transition-all duration-200 hover:bg-surface hover:text-text-primary"
+              >
+                Chat
+              </Link>
             </div>
           </div>
         </nav>
