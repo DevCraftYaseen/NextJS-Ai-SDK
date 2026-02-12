@@ -85,7 +85,7 @@ export default function CompletionPage() {
   // ─── WELCOME LAYOUT: centered input + greeting (no chat yet) ───
   if (!chatStarted) {
     return (
-      <div className="flex flex-col items-center justify-center h-[calc(100vh-56px)] px-6">
+      <div className="flex flex-col items-center justify-center h-[calc(100vh-56px)] px-4 sm:px-6">
         <div className="w-full max-w-2xl animate-fade-in-up flex flex-col items-center gap-8">
           {/* Welcome message */}
           <div className="text-center space-y-3">
@@ -96,7 +96,7 @@ export default function CompletionPage() {
                 <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </div>
-            <h1 className="text-3xl font-semibold text-text-primary">
+            <h1 className="text-2xl sm:text-3xl font-semibold text-text-primary">
               How can I help you today?
             </h1>
             <p className="text-text-tertiary text-sm max-w-sm mx-auto">
@@ -133,7 +133,7 @@ export default function CompletionPage() {
           pb-6 gives breathing room at the bottom of the scroll area. */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto px-6 pt-6 pb-6"
+        className="flex-1 overflow-y-auto px-4 pt-4 pb-4 sm:px-6 sm:pt-6 sm:pb-6"
       >
         <div className="mx-auto max-w-2xl animate-fade-in-up">
           {/* Error State */}
@@ -188,7 +188,7 @@ export default function CompletionPage() {
         {/* Gradient fade — gives a soft transition between chat and input,
             hiding content that scrolls behind the input bar. */}
         <div className="pointer-events-none absolute -top-8 left-0 right-0 h-8 bg-gradient-to-t from-background to-transparent" />
-        <div className="mx-auto max-w-2xl px-6 py-4">
+        <div className="mx-auto max-w-2xl px-4 py-3 sm:px-6 sm:py-4">
           {inputBar}
         </div>
       </div>

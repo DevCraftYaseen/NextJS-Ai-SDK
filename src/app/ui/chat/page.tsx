@@ -74,7 +74,7 @@ export default function ChatPage() {
   // ─── WELCOME LAYOUT: centered input + greeting (no chat yet) ───
   if (!chatStarted) {
     return (
-      <div className="flex flex-col items-center justify-center h-[calc(100vh-56px)] px-6">
+      <div className="flex flex-col items-center justify-center h-[calc(100vh-56px)] px-4 sm:px-6">
         <div className="w-full max-w-2xl animate-fade-in-up flex flex-col items-center gap-8">
           {/* Welcome message */}
           <div className="text-center space-y-3">
@@ -83,7 +83,7 @@ export default function ChatPage() {
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="currentColor" opacity="0.3" stroke="currentColor" strokeWidth="1"/>
               </svg>
             </div>
-            <h1 className="text-3xl font-semibold text-text-primary">
+            <h1 className="text-2xl sm:text-3xl font-semibold text-text-primary">
               How can I help you today?
             </h1>
             <p className="text-text-tertiary text-sm max-w-sm mx-auto">
@@ -119,7 +119,7 @@ export default function ChatPage() {
           overflow-y-auto lets messages scroll while input stays fixed. */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto px-6 pt-6 pb-6"
+        className="flex-1 overflow-y-auto px-4 pt-4 pb-4 sm:px-6 sm:pt-6 sm:pb-6"
       >
         <div className="mx-auto max-w-2xl space-y-4">
           {/* Error State */}
@@ -141,7 +141,7 @@ export default function ChatPage() {
                 className={`flex ${isUser ? "justify-end" : "justify-start"} animate-slide-in`}
               >
                 <div
-                  className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                  className={`max-w-[85%] sm:max-w-[80%] rounded-2xl px-3 py-2.5 sm:px-4 sm:py-3 ${
                     isUser
                       ? "bg-accent text-white rounded-br-md"
                       : "border border-border bg-surface-raised text-text-primary rounded-bl-md"
@@ -206,7 +206,7 @@ export default function ChatPage() {
           so it never moves. Gradient fade hides content scrolling behind it. */}
       <div className="shrink-0 border-t border-border-light bg-background relative z-10">
         <div className="pointer-events-none absolute -top-8 left-0 right-0 h-8 bg-gradient-to-t from-background to-transparent" />
-        <div className="mx-auto max-w-2xl px-6 py-4">
+        <div className="mx-auto max-w-2xl px-4 py-3 sm:px-6 sm:py-4">
           {inputBar}
         </div>
       </div>
