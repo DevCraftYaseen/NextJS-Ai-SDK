@@ -6,6 +6,12 @@ export async function POST(req: Request) {
         const { prompt } = await req.json()
         const { text } = await generateText({
             model: google('gemini-2.5-flash'),
+            messages: [
+                {
+                    role: "system",
+                    content: "You are a helpful coding assistant. Keep responses under 2 sentences and focus on usefull and required information only."
+                },
+            ],
             prompt,
         });
 
