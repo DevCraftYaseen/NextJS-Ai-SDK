@@ -1,7 +1,7 @@
 "use client";
 
 import { useCompletion } from "@ai-sdk/react";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 
 export default function CompletionPage() {
   // useCompletion hook from AI SDK — handles state, fetch, and stream parsing.
@@ -26,18 +26,24 @@ export default function CompletionPage() {
   // so the input stays at the bottom instead of jumping back to center.
   const [chatStarted, setChatStarted] = useState(false);
 
-  // Ref to the scrollable chat container so we can auto-scroll to bottom
-  // as new streamed text arrives, keeping the latest content visible.
   const scrollRef = useRef<HTMLDivElement>(null);
+  const userScrolledUp = useRef(false);
 
-  // Auto-scroll the chat area to the bottom on every completion update.
-  // This fires on each streamed chunk, keeping the view pinned to the
-  // latest text without the user needing to scroll manually.
-  useEffect(() => {
-    if (scrollRef.current) {
+  const scrollToBottom = useCallback(() => {
+    if (scrollRef.current && !userScrolledUp.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [completion, isLoading]);
+  }, []);
+
+  const handleScroll = useCallback(() => {
+    if (!scrollRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+    userScrolledUp.current = scrollHeight - scrollTop - clientHeight > 80;
+  }, []);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [completion, isLoading, scrollToBottom]);
 
   // Wraps the form submit — marks chat as started so layout switches
   // from "welcome centered" mode to "chat mode" with fixed bottom input.
@@ -46,6 +52,7 @@ export default function CompletionPage() {
     if (!input.trim()) return;
     setChatStarted(true);
     setInput("");
+    userScrolledUp.current = false;
     handleSubmit(e);
   };
 
@@ -85,7 +92,7 @@ export default function CompletionPage() {
   // ─── WELCOME LAYOUT: centered input + greeting (no chat yet) ───
   if (!chatStarted) {
     return (
-      <div className="flex flex-col items-center justify-center h-[calc(100vh-56px)] px-4 sm:px-6">
+      <div className="flex flex-1 flex-col items-center justify-center px-4 sm:px-6">
         <div className="w-full max-w-2xl animate-fade-in-up flex flex-col items-center gap-8">
           {/* Welcome message */}
           <div className="text-center space-y-3">
@@ -127,12 +134,10 @@ export default function CompletionPage() {
 
   // ─── CHAT LAYOUT: scrollable messages + fixed bottom input ───
   return (
-    <div className="flex flex-col h-[calc(100vh-56px)]">
-      {/* Scrollable chat area — takes all available space above the input.
-          overflow-y-auto lets it scroll independently while input stays fixed.
-          pb-6 gives breathing room at the bottom of the scroll area. */}
+    <>
       <div
         ref={scrollRef}
+        onScroll={handleScroll}
         className="flex-1 overflow-y-auto px-4 pt-4 pb-4 sm:px-6 sm:pt-6 sm:pb-6"
       >
         <div className="mx-auto max-w-2xl animate-fade-in-up">
@@ -181,17 +186,12 @@ export default function CompletionPage() {
         </div>
       </div>
 
-      {/* Fixed input bar at the bottom — sits outside the scroll container
-          so it never moves. A top border and gradient fade visually separate
-          it from the chat. z-10 ensures it renders above any scroll content. */}
       <div className="shrink-0 border-t border-border-light bg-background relative z-10">
-        {/* Gradient fade — gives a soft transition between chat and input,
-            hiding content that scrolls behind the input bar. */}
         <div className="pointer-events-none absolute -top-8 left-0 right-0 h-8 bg-gradient-to-t from-background to-transparent" />
         <div className="mx-auto max-w-2xl px-4 py-3 sm:px-6 sm:py-4">
           {inputBar}
         </div>
       </div>
-    </div>
+    </>
   );
 }

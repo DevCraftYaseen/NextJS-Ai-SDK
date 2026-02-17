@@ -26,12 +26,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background text-foreground`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground h-dvh flex flex-col overflow-hidden`}
       >
         <NavBar />
 
-        {/* Main content */}
-        <main>
+        {/* Main content — flex-1 fills remaining height below nav.
+            overflow-hidden prevents double scrollbars; each page manages its own scroll. */}
+        <main className="flex-1 flex flex-col min-h-0">
           {children}
         </main>
       </body>

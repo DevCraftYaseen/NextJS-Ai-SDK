@@ -82,7 +82,7 @@ function StructuredEnums() {
   // ─── WELCOME LAYOUT: centered input + greeting (before any submission) ───
   if (!started) {
     return (
-      <div className="flex flex-col items-center justify-center h-[calc(100vh-56px)] px-4 sm:px-6">
+      <div className="flex flex-1 flex-col items-center justify-center px-4 sm:px-6">
         <div className="w-full max-w-2xl animate-fade-in-up flex flex-col items-center gap-8">
           {/* Welcome icon & heading */}
           <div className="text-center space-y-3">
@@ -118,8 +118,7 @@ function StructuredEnums() {
   const config = sentiment ? sentimentConfig[sentiment] : null;
 
   return (
-    <div className="flex flex-col h-[calc(100vh-56px)]">
-      {/* Scrollable results area */}
+    <>
       <div className="flex-1 overflow-y-auto px-4 pt-4 pb-4 sm:px-6 sm:pt-6 sm:pb-6">
         <div className="mx-auto max-w-2xl">
           {/* Error State */}
@@ -200,14 +199,13 @@ function StructuredEnums() {
         </div>
       </div>
 
-      {/* Fixed input bar at the bottom */}
       <div className="shrink-0 border-t border-border-light bg-background relative z-10">
         <div className="pointer-events-none absolute -top-8 left-0 right-0 h-8 bg-gradient-to-t from-background to-transparent" />
         <div className="mx-auto max-w-2xl px-4 py-3 sm:px-6 sm:py-4">
           {inputBar}
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

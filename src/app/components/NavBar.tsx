@@ -9,6 +9,7 @@ const navLinks = [
   { href: "/ui/completion", label: "Completion" },
   { href: "/ui/stream", label: "Stream" },
   { href: "/ui/chat", label: "Chat" },
+  { href: "/ui/multi-modal-chat", label: "Vision" },
   { href: "/ui/structured-data", label: "Recipes" },
   { href: "/ui/structured-array", label: "Pokémon" },
   { href: "/ui/structured-enums", label: "Sentiment" },

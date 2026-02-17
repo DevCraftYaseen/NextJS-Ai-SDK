@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { experimental_useObject as useObject } from "@ai-sdk/react";
 import { recipeSchema } from "@/app/api/structured-data/schema";
 
@@ -16,20 +16,30 @@ function StructuredData() {
   // Keeps layout in "recipe mode" so input stays at the bottom.
   const [chatStarted, setChatStarted] = useState(false);
 
-  // Ref to scrollable content area for auto-scrolling as recipe data streams in.
   const scrollRef = useRef<HTMLDivElement>(null);
+  const userScrolledUp = useRef(false);
 
-  // Auto-scroll to bottom when the recipe object updates (new fields streaming in).
-  useEffect(() => {
-    if (scrollRef.current) {
+  const scrollToBottom = useCallback(() => {
+    if (scrollRef.current && !userScrolledUp.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [object, isLoading]);
+  }, []);
+
+  const handleScroll = useCallback(() => {
+    if (!scrollRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+    userScrolledUp.current = scrollHeight - scrollTop - clientHeight > 80;
+  }, []);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [object, isLoading, scrollToBottom]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!dishName.trim()) return;
     setChatStarted(true);
+    userScrolledUp.current = false;
     submit({ dish: dishName });
     setDishName("");
   };
@@ -70,7 +80,7 @@ function StructuredData() {
   // ─── WELCOME LAYOUT: centered input + greeting (no recipe yet) ───
   if (!chatStarted) {
     return (
-      <div className="flex flex-col items-center justify-center h-[calc(100vh-56px)] px-4 sm:px-6">
+      <div className="flex flex-1 flex-col items-center justify-center px-4 sm:px-6">
         <div className="w-full max-w-2xl animate-fade-in-up flex flex-col items-center gap-8">
           {/* Welcome message */}
           <div className="text-center space-y-3">
@@ -111,11 +121,10 @@ function StructuredData() {
 
   // ─── RECIPE LAYOUT: scrollable content + fixed bottom input ───
   return (
-    <div className="flex flex-col h-[calc(100vh-56px)]">
-      {/* Scrollable recipe area — takes all space above the input.
-          overflow-y-auto lets the recipe scroll while input stays fixed. */}
+    <>
       <div
         ref={scrollRef}
+        onScroll={handleScroll}
         className="flex-1 overflow-y-auto px-4 pt-4 pb-4 sm:px-6 sm:pt-6 sm:pb-6"
       >
         <div className="mx-auto max-w-2xl">
@@ -223,15 +232,13 @@ function StructuredData() {
         </div>
       </div>
 
-      {/* Fixed input bar at the bottom — sits outside the scroll container
-          so it never moves. Gradient fade hides content scrolling behind it. */}
       <div className="shrink-0 border-t border-border-light bg-background relative z-10">
         <div className="pointer-events-none absolute -top-8 left-0 right-0 h-8 bg-gradient-to-t from-background to-transparent" />
         <div className="mx-auto max-w-2xl px-4 py-3 sm:px-6 sm:py-4">
           {inputBar}
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useChat } from "@ai-sdk/react";
 
 export default function ChatPage() {
@@ -11,21 +11,30 @@ export default function ChatPage() {
   // Keeps layout in "chat mode" so input stays at bottom between messages.
   const [chatStarted, setChatStarted] = useState(false);
 
-  // Ref to scrollable chat container for auto-scrolling to bottom
-  // as new messages or streamed chunks arrive.
   const scrollRef = useRef<HTMLDivElement>(null);
+  const userScrolledUp = useRef(false);
 
-  // Auto-scroll to bottom whenever messages change (new message or new chunk).
-  useEffect(() => {
-    if (scrollRef.current) {
+  const scrollToBottom = useCallback(() => {
+    if (scrollRef.current && !userScrolledUp.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages, status]);
+  }, []);
+
+  const handleScrollEvent = useCallback(() => {
+    if (!scrollRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+    userScrolledUp.current = scrollHeight - scrollTop - clientHeight > 80;
+  }, []);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, status, scrollToBottom]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!input.trim()) return;
     setChatStarted(true);
+    userScrolledUp.current = false;
     sendMessage({ text: input });
     setInput("");
   };
@@ -74,7 +83,7 @@ export default function ChatPage() {
   // ─── WELCOME LAYOUT: centered input + greeting (no chat yet) ───
   if (!chatStarted) {
     return (
-      <div className="flex flex-col items-center justify-center h-[calc(100vh-56px)] px-4 sm:px-6">
+      <div className="flex flex-1 flex-col items-center justify-center px-4 sm:px-6">
         <div className="w-full max-w-2xl animate-fade-in-up flex flex-col items-center gap-8">
           {/* Welcome message */}
           <div className="text-center space-y-3">
@@ -114,11 +123,10 @@ export default function ChatPage() {
 
   // ─── CHAT LAYOUT: scrollable messages + fixed bottom input ───
   return (
-    <div className="flex flex-col h-[calc(100vh-56px)]">
-      {/* Scrollable chat area — takes all space above the input.
-          overflow-y-auto lets messages scroll while input stays fixed. */}
+    <>
       <div
         ref={scrollRef}
+        onScroll={handleScrollEvent}
         className="flex-1 overflow-y-auto px-4 pt-4 pb-4 sm:px-6 sm:pt-6 sm:pb-6"
       >
         <div className="mx-auto max-w-2xl space-y-4">
@@ -202,14 +210,12 @@ export default function ChatPage() {
         </div>
       </div>
 
-      {/* Fixed input bar at the bottom — sits outside the scroll container
-          so it never moves. Gradient fade hides content scrolling behind it. */}
       <div className="shrink-0 border-t border-border-light bg-background relative z-10">
         <div className="pointer-events-none absolute -top-8 left-0 right-0 h-8 bg-gradient-to-t from-background to-transparent" />
         <div className="mx-auto max-w-2xl px-4 py-3 sm:px-6 sm:py-4">
           {inputBar}
         </div>
       </div>
-    </div>
+    </>
   );
 }

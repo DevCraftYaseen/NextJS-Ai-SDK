@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="min-h-[calc(100vh-56px)] flex flex-col">
+    <div className="flex-1 flex flex-col overflow-y-auto">
       {/* ─── HERO SECTION ─── */}
       <section className="flex flex-col items-center justify-center px-4 pt-10 pb-8 sm:px-6 sm:pt-16 sm:pb-12">
         <div className="animate-fade-in-up flex w-full max-w-2xl flex-col items-center gap-6 text-center">
@@ -150,11 +150,30 @@ export default function Home() {
               </p>
             </Link>
 
+            {/* Vision / Multi-Modal Card */}
+            <Link
+              href="/ui/multi-modal-chat"
+              className="group animate-fade-in-up rounded-xl border border-border bg-surface-raised p-5 text-left transition-all duration-200 hover:border-accent/30 hover:shadow-sm"
+              style={{ animationDelay: "0.55s", animationFillMode: "backwards" }}
+            >
+              <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-accent-light text-accent transition-transform duration-200 group-hover:scale-110">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <path d="M21 15l-5-5L5 21"/>
+                </svg>
+              </div>
+              <h3 className="mb-1 text-sm font-semibold text-text-primary">Vision</h3>
+              <p className="text-sm leading-relaxed text-text-tertiary">
+                Send images alongside text. AI can see and understand your attachments.
+              </p>
+            </Link>
+
             {/* Sentiment / Structured Enums Card */}
             <Link
               href="/ui/structured-enums"
               className="group animate-fade-in-up rounded-xl border border-border bg-surface-raised p-5 text-left transition-all duration-200 hover:border-accent/30 hover:shadow-sm"
-              style={{ animationDelay: "0.6s", animationFillMode: "backwards" }}
+              style={{ animationDelay: "0.65s", animationFillMode: "backwards" }}
             >
               <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-accent-light text-accent transition-transform duration-200 group-hover:scale-110">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -222,6 +241,9 @@ export default function Home() {
               </Link>
               <Link href="/ui/structured-array" className="text-xs text-text-tertiary hover:text-text-primary transition-colors duration-200">
                 Pokémon
+              </Link>
+              <Link href="/ui/multi-modal-chat" className="text-xs text-text-tertiary hover:text-text-primary transition-colors duration-200">
+                Vision
               </Link>
               <Link href="/ui/structured-enums" className="text-xs text-text-tertiary hover:text-text-primary transition-colors duration-200">
                 Sentiment
