@@ -13,6 +13,7 @@ const navLinks = [
   { href: "/ui/structured-data", label: "Recipes" },
   { href: "/ui/structured-array", label: "Pokémon" },
   { href: "/ui/structured-enums", label: "Sentiment" },
+  { href: "/ui/generate-image", label: "Image Gen" },
 ];
 
 export default function NavBar() {
@@ -20,7 +21,7 @@ export default function NavBar() {
   const pathname = usePathname();
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-sm">
+    <nav className="shrink-0 z-50 relative border-b border-border bg-background/80 backdrop-blur-sm">
       <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-3 sm:px-6">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group" onClick={() => setIsOpen(false)}>
@@ -72,10 +73,10 @@ export default function NavBar() {
         </button>
       </div>
 
-      {/* Mobile dropdown menu — slides down when open */}
+      {/* Mobile dropdown menu — overlays content, doesn't push it down */}
       <div
-        className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-          isOpen ? "max-h-96 border-t border-border-light" : "max-h-0"
+        className={`md:hidden absolute left-0 right-0 top-full z-50 overflow-hidden border-b border-border bg-background/95 backdrop-blur-md shadow-lg transition-all duration-300 ease-in-out ${
+          isOpen ? "max-h-[28rem] border-t border-border-light" : "max-h-0 border-b-0"
         }`}
       >
         <div className="px-4 py-2 space-y-1">

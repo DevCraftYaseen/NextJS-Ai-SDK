@@ -188,6 +188,23 @@ export default function Home() {
                 Classify text sentiment as positive, negative, or neutral with enum output.
               </p>
             </Link>
+            {/* Generate Image Card */}
+            <Link
+              href="/ui/generate-image"
+              className="group animate-fade-in-up rounded-xl border border-border bg-surface-raised p-5 text-left transition-all duration-200 hover:border-accent/30 hover:shadow-sm"
+              style={{ animationDelay: "0.7s", animationFillMode: "backwards" }}
+            >
+              <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-accent-light text-accent transition-transform duration-200 group-hover:scale-110">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <path d="M12 8v8M8 12h8"/>
+                </svg>
+              </div>
+              <h3 className="mb-1 text-sm font-semibold text-text-primary">Image Gen</h3>
+              <p className="text-sm leading-relaxed text-text-tertiary">
+                Generate images from text prompts using Flux AI model.
+              </p>
+            </Link>
           </div>
         </div>
       </section>
@@ -247,6 +264,9 @@ export default function Home() {
               </Link>
               <Link href="/ui/structured-enums" className="text-xs text-text-tertiary hover:text-text-primary transition-colors duration-200">
                 Sentiment
+              </Link>
+              <Link href="/ui/generate-image" className="text-xs text-text-tertiary hover:text-text-primary transition-colors duration-200">
+                Image Gen
               </Link>
             </div>
 
