@@ -18,7 +18,7 @@ export async function POST(req: Request) {
         return Response.json(image.base64)
     } catch (error) {
         console.log("Error generating image:", error);
-        return new Response("Failed To Generate Image", { status: 500 });
+        return Response.json({ error: "Failed To Generate Image" }, { status: 500 });
     }
 }
 
