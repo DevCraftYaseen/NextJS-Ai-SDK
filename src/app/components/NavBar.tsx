@@ -1,70 +1,180 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-// All navigation links — single source of truth for both desktop and mobile menus.
-const navLinks = [
-  { href: "/ui/completion", label: "Completion" },
-  { href: "/ui/stream", label: "Stream" },
-  { href: "/ui/chat", label: "Chat" },
-  { href: "/ui/multi-modal-chat", label: "Vision" },
-  { href: "/ui/structured-data", label: "Recipes" },
-  { href: "/ui/structured-array", label: "Pokémon" },
-  { href: "/ui/structured-enums", label: "Sentiment" },
-  { href: "/ui/generate-image", label: "Image Gen" },
+// Navigation groups for dropdown organization
+const navGroups = [
+  {
+    label: "Text AI",
+    href: "/ui/chat",
+    items: [
+      { href: "/ui/completion", label: "Completion", desc: "Single AI response" },
+      { href: "/ui/stream", label: "Stream", desc: "Real-time streaming" },
+      { href: "/ui/chat", label: "Chat", desc: "Multi-turn conversation" },
+    ],
+  },
+  {
+    label: "Vision",
+    href: "/ui/multi-modal-chat",
+    items: [
+      { href: "/ui/multi-modal-chat", label: "Vision Chat", desc: "Image + text input" },
+      { href: "/ui/generate-image", label: "Image Gen", desc: "AI image generation" },
+    ],
+  },
+  {
+    label: "Structured",
+    href: "/ui/structured-data",
+    items: [
+      { href: "/ui/structured-data", label: "Recipes", desc: "Object output" },
+      { href: "/ui/structured-array", label: "Pokémon", desc: "Array output" },
+      { href: "/ui/structured-enums", label: "Sentiment", desc: "Enum classification" },
+    ],
+  },
+  {
+    label: "Audio",
+    href: "/ui/transcribe-audio",
+    items: [
+      { href: "/ui/transcribe-audio", label: "Transcribe", desc: "Speech to text" },
+    ],
+  },
 ];
 
+function useClickOutside(ref: React.RefObject<HTMLElement | null>, handler: () => void) {
+  useEffect(() => {
+    function listener(event: MouseEvent | TouchEvent) {
+      if (!ref.current || ref.current.contains(event.target as Node)) return;
+      handler();
+    }
+    document.addEventListener("mousedown", listener);
+    document.addEventListener("touchstart", listener);
+    return () => {
+      document.removeEventListener("mousedown", listener);
+      document.removeEventListener("touchstart", listener);
+    };
+  }, [ref, handler]);
+}
+
 export default function NavBar() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const pathname = usePathname();
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useClickOutside(dropdownRef, () => setOpenDropdown(null));
+
+  useEffect(() => {
+    setOpenDropdown(null);
+    setMobileOpen(false);
+  }, [pathname]);
+
+  const isActive = (href: string) => pathname === href;
+  const isGroupActive = (group: (typeof navGroups)[0]) =>
+    group.items.some((item) => isActive(item.href));
 
   return (
-    <nav className="shrink-0 z-50 relative border-b border-border bg-background/80 backdrop-blur-sm">
-      <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-3 sm:px-6">
+    <nav className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4 sm:px-6">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group" onClick={() => setIsOpen(false)}>
-          <span className="font-mono text-lg font-bold text-accent transition-transform duration-300 group-hover:scale-105">
+        <Link
+          href="/"
+          className="flex items-center gap-2 transition-opacity hover:opacity-80"
+        >
+          <span className="font-mono text-lg font-bold text-accent">
             {"{"}DCY{"}"}
           </span>
-          <span className="text-lg font-semibold text-text-primary">
+          <span className="hidden text-lg font-semibold text-text-primary sm:block">
             Assistant
           </span>
         </Link>
 
-        {/* Desktop nav links — hidden on mobile */}
-        <div className="hidden md:flex items-center gap-1">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`rounded-lg px-3.5 py-1.5 text-sm font-medium transition-all duration-200 hover:bg-surface hover:text-text-primary ${
-                pathname === link.href
-                  ? "bg-surface text-text-primary"
-                  : "text-text-secondary"
-              }`}
-            >
-              {link.label}
-            </Link>
+        {/* Desktop Navigation - Grouped Dropdowns */}
+        <div ref={dropdownRef} className="hidden items-center gap-1 md:flex">
+          {navGroups.map((group) => (
+            <div key={group.label} className="relative">
+              <button
+                onClick={() =>
+                  setOpenDropdown(openDropdown === group.label ? null : group.label)
+                }
+                className={`flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${
+                  isGroupActive(group) || openDropdown === group.label
+                    ? "bg-surface text-text-primary"
+                    : "text-text-secondary hover:bg-surface/50 hover:text-text-primary"
+                }`}
+              >
+                {group.label}
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className={`transition-transform duration-200 ${
+                    openDropdown === group.label ? "rotate-180" : ""
+                  }`}
+                >
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </button>
+
+              {/* Dropdown Menu */}
+              {openDropdown === group.label && (
+                <div className="absolute left-0 top-full z-50 mt-1 w-56 rounded-xl border border-border bg-surface-raised p-1.5 shadow-lg animate-fade-in">
+                  {group.items.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`flex flex-col rounded-lg px-3 py-2.5 text-sm transition-colors duration-200 ${
+                        isActive(item.href)
+                          ? "bg-accent/10 text-accent"
+                          : "text-text-secondary hover:bg-surface hover:text-text-primary"
+                      }`}
+                    >
+                      <span className="font-medium">{item.label}</span>
+                      <span className="text-xs opacity-70">{item.desc}</span>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
           ))}
         </div>
 
-        {/* Hamburger button — visible only on mobile */}
+        {/* Mobile Menu Button */}
         <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden flex h-9 w-9 items-center justify-center rounded-lg text-text-secondary transition-colors duration-200 hover:bg-surface hover:text-text-primary"
+          onClick={() => setMobileOpen(!mobileOpen)}
+          className="flex h-9 w-9 items-center justify-center rounded-lg text-text-secondary transition-colors duration-200 hover:bg-surface hover:text-text-primary md:hidden"
           aria-label="Toggle menu"
         >
-          {isOpen ? (
-            /* X icon */
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          {mobileOpen ? (
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
           ) : (
-            /* Hamburger icon */
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <line x1="3" y1="6" x2="21" y2="6" />
               <line x1="3" y1="12" x2="21" y2="12" />
               <line x1="3" y1="18" x2="21" y2="18" />
@@ -73,26 +183,36 @@ export default function NavBar() {
         </button>
       </div>
 
-      {/* Mobile dropdown menu — overlays content, doesn't push it down */}
+      {/* Mobile Menu */}
       <div
-        className={`md:hidden absolute left-0 right-0 top-full z-50 overflow-hidden border-b border-border bg-background/95 backdrop-blur-md shadow-lg transition-all duration-300 ease-in-out ${
-          isOpen ? "max-h-[28rem] border-t border-border-light" : "max-h-0 border-b-0"
+        className={`overflow-hidden border-b border-border bg-surface transition-all duration-300 ease-in-out md:hidden ${
+          mobileOpen ? "max-h-[32rem]" : "max-h-0 border-b-0"
         }`}
       >
-        <div className="px-4 py-2 space-y-1">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setIsOpen(false)}
-              className={`block rounded-lg px-3.5 py-2.5 text-sm font-medium transition-all duration-200 hover:bg-surface hover:text-text-primary ${
-                pathname === link.href
-                  ? "bg-surface text-text-primary"
-                  : "text-text-secondary"
-              }`}
-            >
-              {link.label}
-            </Link>
+        <div className="space-y-1 px-4 py-3">
+          {navGroups.map((group) => (
+            <div key={group.label} className="mb-3">
+              <div className="mb-1 px-3 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
+                {group.label}
+              </div>
+              <div className="space-y-0.5">
+                {group.items.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMobileOpen(false)}
+                    className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-sm transition-colors duration-200 ${
+                      isActive(item.href)
+                        ? "bg-accent/10 text-accent font-medium"
+                        : "text-text-secondary hover:bg-surface-raised hover:text-text-primary"
+                    }`}
+                  >
+                    <span>{item.label}</span>
+                    <span className="text-xs opacity-60">{item.desc}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
           ))}
         </div>
       </div>

@@ -518,14 +518,14 @@ export default function MultiModalChatPage() {
                         return (
                           <div
                             key={`${message.id}-file-${index}`}
-                            className="mb-2 rounded-lg overflow-hidden"
+                            className="mb-2 rounded-lg overflow-hidden max-w-[160px] sm:max-w-[200px]"
                           >
                             <Image
                               src={part.url}
                               alt={part.filename ?? `attachment-${index}`}
-                              width={50}
-                              height={50}
-                              className="rounded-lg object-cover max-w-[200px] h-auto"
+                              width={200}
+                              height={200}
+                              className="rounded-lg object-cover w-full h-auto"
                             />
                           </div>
                         );
@@ -564,7 +564,7 @@ export default function MultiModalChatPage() {
                               <path d="M9 11h6" />
                             </svg>
                             <div className="min-w-0">
-                              <div className="truncate max-w-[180px] font-medium">
+                              <div className="truncate max-w-[120px] sm:max-w-[180px] font-medium">
                                 {part.filename ?? "PDF Document"}
                               </div>
                               <div
