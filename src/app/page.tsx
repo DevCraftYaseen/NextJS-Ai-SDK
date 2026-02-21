@@ -224,6 +224,25 @@ export default function Home() {
                 Record or upload audio and get AI-generated transcriptions.
               </p>
             </Link>
+
+            {/* TTS Card */}
+            <Link
+              href="/ui/tts"
+              className="group animate-fade-in-up rounded-xl border border-border bg-surface-raised p-5 text-left transition-all duration-200 hover:border-accent/30 hover:shadow-sm"
+              style={{ animationDelay: "0.8s", animationFillMode: "backwards" }}
+            >
+              <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-accent-light text-accent transition-transform duration-200 group-hover:scale-110">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                  <line x1="12" y1="19" x2="12" y2="22"/>
+                </svg>
+              </div>
+              <h3 className="mb-1 text-sm font-semibold text-text-primary">Text to Speech</h3>
+              <p className="text-sm leading-relaxed text-text-tertiary">
+                Convert any text into natural-sounding AI-generated speech.
+              </p>
+            </Link>
           </div>
         </div>
       </section>
@@ -289,6 +308,9 @@ export default function Home() {
               </Link>
               <Link href="/ui/transcribe-audio" className="text-xs text-text-tertiary hover:text-text-primary transition-colors duration-200">
                 Transcribe
+              </Link>
+              <Link href="/ui/tts" className="text-xs text-text-tertiary hover:text-text-primary transition-colors duration-200">
+                TTS
               </Link>
             </div>
 

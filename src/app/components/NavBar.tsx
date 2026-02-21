@@ -37,6 +37,7 @@ const navGroups = [
     href: "/ui/transcribe-audio",
     items: [
       { href: "/ui/transcribe-audio", label: "Transcribe", desc: "Speech to text" },
+      { href: "/ui/tts", label: "Text to Speech", desc: "Convert text to audio" },
     ],
   },
 ];

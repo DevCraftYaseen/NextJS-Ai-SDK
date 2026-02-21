@@ -12,6 +12,7 @@
     "@ai-sdk/google": "^3.0.23",
     "@ai-sdk/react": "^3.0.80",
     "@firemoon/ai-provider": "^0.0.1",
+    "@google/genai": "^1.42.0",
     "@nanostores/react": "github:ai/react",
     "ai": "^6.0.78",
     "next": "16.1.6",

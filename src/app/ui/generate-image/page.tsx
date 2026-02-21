@@ -137,15 +137,17 @@ export default function GenerateImage() {
 
           {/* Loading State */}
           {isLoading && (
-            <div className="animate-fade-in flex flex-col items-center justify-center gap-4 py-16">
+            <div className="animate-fade-in flex flex-col items-center justify-center gap-4 py-12 sm:py-16">
               <div className="relative h-16 w-16">
                 <div className="absolute inset-0 rounded-full border-2 border-border-light"></div>
                 <div className="absolute inset-0 rounded-full border-2 border-accent border-t-transparent animate-spin"></div>
                 <div className="absolute inset-3 rounded-full border-2 border-accent/30 border-b-transparent animate-spin" style={{ animationDirection: "reverse", animationDuration: "1.5s" }}></div>
               </div>
-              <div className="text-center space-y-1">
+              <div className="text-center space-y-2 px-4">
                 <p className="text-sm font-medium text-text-primary">Generating your image...</p>
-                <p className="text-xs text-text-tertiary">This may take a few seconds</p>
+                <p className="text-xs text-text-tertiary max-w-xs mx-auto">
+                  Complex prompts may take up to 30-60 seconds
+                </p>
               </div>
             </div>
           )}
