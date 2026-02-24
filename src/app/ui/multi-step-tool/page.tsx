@@ -1,0 +1,467 @@
+"use client";
+
+import { useState, useRef, useEffect, useCallback } from "react";
+import { useChat } from "@ai-sdk/react";
+import { DefaultChatTransport } from "ai";
+import type { ChatMessage } from "@/app/api/multi-step-tool/route";
+
+export default function ToosPage() {
+  const [input, setInput] = useState("");
+  const { messages, sendMessage, status, error, stop } = useChat<ChatMessage>({
+    transport: new DefaultChatTransport({
+      api: "/api/multi-step-tool",
+    }),
+  });
+
+  // Tracks whether the user has ever sent a message — once true, stays true.
+  // Keeps layout in "chat mode" so input stays at bottom between messages.
+  const [chatStarted, setChatStarted] = useState(false);
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const userScrolledUp = useRef(false);
+
+  const scrollToBottom = useCallback(() => {
+    if (scrollRef.current && !userScrolledUp.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, []);
+
+  const handleScrollEvent = useCallback(() => {
+    if (!scrollRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+    userScrolledUp.current = scrollHeight - scrollTop - clientHeight > 80;
+  }, []);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, status, scrollToBottom]);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+    setChatStarted(true);
+    userScrolledUp.current = false;
+    sendMessage({ text: input });
+    setInput("");
+  };
+
+  // Helper: checks if AI is currently generating a response
+  // FIX: original code had `status === "streaming" || status === "submitted" && (...)`
+  // which is a precedence bug — && binds tighter than ||.
+  // Wrapping in a helper avoids that entirely.
+  const isActive = status === "streaming" || status === "submitted";
+
+  // ─── The shared input bar used in both layouts ───
+  const inputBar = (
+    <form onSubmit={handleSubmit}>
+      <div className="rounded-xl border border-border bg-surface-raised p-1.5 transition-all duration-200 focus-within:border-accent/40 focus-within:shadow-sm">
+        <div className="relative flex items-center">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Type your message..."
+            className="w-full bg-transparent px-3.5 py-2.5 text-[15px] text-text-primary placeholder-text-tertiary focus:outline-none"
+          />
+          {/* Show Stop button while AI is generating, Send button otherwise */}
+          {isActive ? (
+            <button
+              onClick={stop}
+              type="button"
+              className="mr-1 shrink-0 rounded-lg border border-border bg-surface px-4 py-2 text-sm font-medium text-text-primary transition-all duration-200 hover:bg-border-light"
+            >
+              Stop
+            </button>
+          ) : (
+            <button
+              disabled={status !== "ready"}
+              type="submit"
+              className="mr-1 shrink-0 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition-all duration-200 hover:bg-accent-hover disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              Send
+            </button>
+          )}
+        </div>
+      </div>
+    </form>
+  );
+
+  // ─── WELCOME LAYOUT: centered input + greeting (no chat yet) ───
+  if (!chatStarted) {
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center px-4 sm:px-6">
+        <div className="w-full max-w-2xl animate-fade-in-up flex flex-col items-center gap-8">
+          {/* Welcome message */}
+          <div className="text-center space-y-3">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-light">
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                className="text-accent"
+              >
+                <path
+                  d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                  fill="currentColor"
+                  opacity="0.3"
+                  stroke="currentColor"
+                  strokeWidth="1"
+                />
+              </svg>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-semibold text-text-primary">
+              How can I help you today?
+            </h1>
+            <p className="text-text-tertiary text-sm max-w-sm mx-auto">
+              Have a conversation with AI. Messages stream in real-time.
+            </p>
+          </div>
+
+          {/* Error shown above input even in welcome state */}
+          {error && (
+            <div className="w-full animate-fade-in flex items-center gap-2.5 rounded-lg border border-error/20 bg-error-light p-3.5 text-error text-sm">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="shrink-0"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="15" y1="9" x2="9" y2="15" />
+                <line x1="9" y1="9" x2="15" y2="15" />
+              </svg>
+              <span>{error.message}</span>
+            </div>
+          )}
+
+          {/* Centered input bar */}
+          <div className="w-full">{inputBar}</div>
+
+          <p className="text-xs text-text-tertiary">
+            Powered by Gemini &middot; Multi-turn chat via Vercel AI SDK
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── CHAT LAYOUT: scrollable messages + fixed bottom input ───
+  return (
+    <>
+      <div
+        ref={scrollRef}
+        onScroll={handleScrollEvent}
+        className="flex-1 overflow-y-auto px-4 pt-4 pb-4 sm:px-6 sm:pt-6 sm:pb-6"
+      >
+        <div className="mx-auto max-w-2xl space-y-4">
+          {/* Error State */}
+          {error && (
+            <div className="animate-fade-in flex items-center gap-2.5 rounded-lg border border-error/20 bg-error-light p-3.5 text-error text-sm">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="shrink-0"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="15" y1="9" x2="9" y2="15" />
+                <line x1="9" y1="9" x2="15" y2="15" />
+              </svg>
+              <span>{error.message}</span>
+            </div>
+          )}
+
+          {/* Messages — user messages right-aligned, AI messages left-aligned */}
+          {messages.map((message) => {
+            const isUser = message.role === "user";
+            return (
+              <div
+                key={message.id}
+                className={`flex ${isUser ? "justify-end" : "justify-start"} animate-slide-in`}
+              >
+                <div
+                  className={`max-w-[85%] sm:max-w-[80%] rounded-2xl px-3 py-2.5 sm:px-4 sm:py-3 ${
+                    isUser
+                      ? "bg-accent text-white rounded-br-md"
+                      : "border border-border bg-surface-raised text-text-primary rounded-bl-md"
+                  }`}
+                >
+                  {/* AI messages get the assistant label */}
+                  {!isUser && (
+                    <div className="mb-1 flex items-center gap-2">
+                      <div className="h-4 w-4 rounded-full bg-accent-light flex items-center justify-center">
+                        <svg
+                          width="9"
+                          height="9"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          className="text-accent"
+                        >
+                          <path
+                            d="M12 2L2 7L12 12L22 7L12 2Z"
+                            fill="currentColor"
+                            opacity="0.3"
+                          />
+                          <path
+                            d="M2 17L12 22L22 17"
+                            stroke="currentColor"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                          <path
+                            d="M2 12L12 17L22 12"
+                            stroke="currentColor"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </div>
+                      <span className="text-[10px] font-medium text-text-tertiary uppercase tracking-wide">
+                        Assistant
+                      </span>
+                    </div>
+                  )}
+                  {/* Render each text part of the message */}
+                  {message.parts.map((part, index) => {
+                    switch (part.type) {
+                      case "text":
+                        return (
+                          <p
+                            key={`${message.id}-${index}`}
+                            className={`whitespace-pre-wrap text-[15px] leading-7 ${
+                              isUser ? "" : "pl-6"
+                            }`}
+                          >
+                            {part.text}
+                          </p>
+                        );
+                      case "tool-getLocation":
+                        switch (part.state) {
+                          case "input-streaming":
+                            return (
+                              <div
+                                key={`${message.id}-getLocation-${index}`}
+                                className="mt-2 rounded-lg border border-border bg-background p-3 animate-fade-in"
+                              >
+                                <div className="flex items-center gap-2 mb-2">
+                                  <div className="h-4 w-4 rounded-full bg-accent/20 flex items-center justify-center">
+                                    <div className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
+                                  </div>
+                                  <span className="text-xs font-medium text-text-secondary uppercase tracking-wide">Location Tool</span>
+                                </div>
+                                <div className="text-sm text-text-tertiary mb-2">Receiving request...</div>
+                                <pre className="text-xs bg-surface rounded p-2 overflow-x-auto text-text-secondary font-mono">
+                                  {JSON.stringify(part.input, null, 2)}
+                                </pre>
+                              </div>
+                            );
+                          case "input-available":
+                            return (
+                              <div
+                                key={`${message.id}-getLocation-${index}`}
+                                className="mt-2 rounded-lg border border-accent/30 bg-accent/5 p-3 animate-fade-in"
+                              >
+                                <div className="flex items-center gap-2 mb-2">
+                                  <div className="h-5 w-5 rounded-lg bg-accent-light flex items-center justify-center">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-accent">
+                                      <path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7z" fill="currentColor" fillOpacity="0.2"/>
+                                      <circle cx="12" cy="9" r="2.5" />
+                                      <path d="M12 2v3M12 19v3" />
+                                    </svg>
+                                  </div>
+                                  <span className="text-xs font-medium text-text-secondary uppercase tracking-wide">Location Tool</span>
+                                </div>
+                                <div className="flex items-center gap-2 text-sm text-text-primary">
+                                  <span className="text-text-tertiary">Getting location for</span>
+                                  <span className="font-semibold text-accent">{part.input.input}</span>
+                                  <span className="text-text-tertiary">...</span>
+                                </div>
+                              </div>
+                            );
+                          case "output-available":
+                            return (
+                              <div
+                                key={`${message.id}-getLocation-${index}`}
+                                className="mt-2 rounded-lg border border-border bg-surface-raised p-4 animate-fade-in"
+                              >
+                                <div className="flex items-center gap-2 mb-3">
+                                  <div className="h-5 w-5 rounded-lg bg-accent-light flex items-center justify-center">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-accent">
+                                      <path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7z" fill="currentColor" fillOpacity="0.2"/>
+                                      <circle cx="12" cy="9" r="2.5" />
+                                      <path d="M12 2v3M12 19v3" />
+                                    </svg>
+                                  </div>
+                                  <span className="text-xs font-semibold text-text-primary uppercase tracking-wide">Location Result</span>
+                                </div>
+                                <div className="text-[15px] leading-7 text-text-primary bg-background rounded-lg p-3 border border-border-light">
+                                  {part.output}
+                                </div>
+                              </div>
+                            );
+                          case "output-error":
+                            return (
+                              <div
+                                key={`${message.id}-getLocation-${index}`}
+                                className="mt-2 rounded-lg border border-error/30 bg-error-light/50 p-3 animate-fade-in"
+                              >
+                                <div className="flex items-center gap-2 mb-2">
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-error">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="15" y1="9" x2="9" y2="15" />
+                                    <line x1="9" y1="9" x2="15" y2="15" />
+                                  </svg>
+                                  <span className="text-xs font-medium text-error uppercase tracking-wide">Tool Error</span>
+                                </div>
+                                <p className="text-sm text-error/80">{part.errorText}</p>
+                              </div>
+                            );
+                          default:
+                            return null;
+                        }
+                      case "tool-getWeather":
+                        switch (part.state) {
+                          case "input-streaming":
+                            return (
+                              <div
+                                key={`${message.id}-getWeather-${index}`}
+                                className="mt-2 rounded-lg border border-border bg-background p-3 animate-fade-in"
+                              >
+                                <div className="flex items-center gap-2 mb-2">
+                                  <div className="h-4 w-4 rounded-full bg-accent/20 flex items-center justify-center">
+                                    <div className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
+                                  </div>
+                                  <span className="text-xs font-medium text-text-secondary uppercase tracking-wide">Weather Tool</span>
+                                </div>
+                                <div className="text-sm text-text-tertiary mb-2">Receiving request...</div>
+                                <pre className="text-xs bg-surface rounded p-2 overflow-x-auto text-text-secondary font-mono">
+                                  {JSON.stringify(part.input, null, 2)}
+                                </pre>
+                              </div>
+                            );
+                          case "input-available":
+                            return (
+                              <div
+                                key={`${message.id}-getWeather-${index}`}
+                                className="mt-2 rounded-lg border border-accent/30 bg-accent/5 p-3 animate-fade-in"
+                              >
+                                <div className="flex items-center gap-2 mb-2">
+                                  <div className="h-5 w-5 rounded-lg bg-accent-light flex items-center justify-center">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-accent">
+                                      <circle cx="12" cy="12" r="10" />
+                                      <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                                      <line x1="9" y1="9" x2="9.01" y2="9" />
+                                      <line x1="15" y1="9" x2="15.01" y2="9" />
+                                    </svg>
+                                  </div>
+                                  <span className="text-xs font-medium text-text-secondary uppercase tracking-wide">Weather Tool</span>
+                                </div>
+                                <div className="flex items-center gap-2 text-sm text-text-primary">
+                                  <span className="text-text-tertiary">Getting weather for</span>
+                                  <span className="font-semibold text-accent">{part.input.city}</span>
+                                  <span className="text-text-tertiary">...</span>
+                                </div>
+                              </div>
+                            );
+                          case "output-available":
+                            return (
+                              <div
+                                key={`${message.id}-getWeather-${index}`}
+                                className="mt-2 rounded-lg border border-border bg-surface-raised p-4 animate-fade-in"
+                              >
+                                <div className="flex items-center gap-2 mb-3">
+                                  <div className="h-5 w-5 rounded-lg bg-accent-light flex items-center justify-center">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-accent">
+                                      <circle cx="12" cy="12" r="10" />
+                                      <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                                      <line x1="9" y1="9" x2="9.01" y2="9" />
+                                      <line x1="15" y1="9" x2="15.01" y2="9" />
+                                    </svg>
+                                  </div>
+                                  <span className="text-xs font-semibold text-text-primary uppercase tracking-wide">Weather Result</span>
+                                </div>
+                                <div className="text-[15px] leading-7 text-text-primary bg-background rounded-lg p-3 border border-border-light">
+                                  {part.output}
+                                </div>
+                              </div>
+                            );
+                          case "output-error":
+                            return (
+                              <div
+                                key={`${message.id}-getWeather-${index}`}
+                                className="mt-2 rounded-lg border border-error/30 bg-error-light/50 p-3 animate-fade-in"
+                              >
+                                <div className="flex items-center gap-2 mb-2">
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-error">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="15" y1="9" x2="9" y2="15" />
+                                    <line x1="9" y1="9" x2="15" y2="15" />
+                                  </svg>
+                                  <span className="text-xs font-medium text-error uppercase tracking-wide">Tool Error</span>
+                                </div>
+                                <p className="text-sm text-error/80">{part.errorText}</p>
+                              </div>
+                            );
+                          default:
+                            return null;
+                        }
+                      default:
+                        return null;
+                    }
+                  })}
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Thinking indicator — shown when AI is processing but hasn't
+              started streaming yet (no assistant message in progress) */}
+          {isActive &&
+            messages.length > 0 &&
+            messages[messages.length - 1].role === "user" && (
+              <div className="flex justify-start animate-slide-in">
+                <div className="rounded-2xl rounded-bl-md border border-border bg-surface-raised px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1">
+                      <div className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse-dot"></div>
+                      <div
+                        className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse-dot"
+                        style={{ animationDelay: "0.2s" }}
+                      ></div>
+                      <div
+                        className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse-dot"
+                        style={{ animationDelay: "0.4s" }}
+                      ></div>
+                    </div>
+                    <span className="text-xs text-text-tertiary">
+                      Thinking...
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+        </div>
+      </div>
+
+      <div className="shrink-0 border-t border-border-light bg-background relative z-10">
+        <div className="pointer-events-none absolute -top-8 left-0 right-0 h-8 bg-gradient-to-t from-background to-transparent" />
+        <div className="mx-auto max-w-2xl px-4 py-3 sm:px-6 sm:py-4">
+          {inputBar}
+        </div>
+      </div>
+    </>
+  );
+}

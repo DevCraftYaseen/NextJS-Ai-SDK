@@ -110,6 +110,42 @@ export default function Home() {
               </p>
             </Link>
 
+            {/* Tools Card */}
+            <Link
+              href="/ui/tools"
+              className="group animate-fade-in-up rounded-xl border border-border bg-surface-raised p-5 text-left transition-all duration-200 hover:border-accent/30 hover:shadow-sm"
+              style={{ animationDelay: "0.35s", animationFillMode: "backwards" }}
+            >
+              <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-accent-light text-accent transition-transform duration-200 group-hover:scale-110">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                </svg>
+              </div>
+              <h3 className="mb-1 text-sm font-semibold text-text-primary">Tools</h3>
+              <p className="text-sm leading-relaxed text-text-tertiary">
+                AI with tool calling capabilities like weather lookup.
+              </p>
+            </Link>
+
+            {/* Multi-Step Tool Card */}
+            <Link
+              href="/ui/multi-step-tool"
+              className="group animate-fade-in-up rounded-xl border border-border bg-surface-raised p-5 text-left transition-all duration-200 hover:border-accent/30 hover:shadow-sm"
+              style={{ animationDelay: "0.375s", animationFillMode: "backwards" }}
+            >
+              <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-accent-light text-accent transition-transform duration-200 group-hover:scale-110">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                  <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                  <line x1="12" y1="22.08" x2="12" y2="12"/>
+                </svg>
+              </div>
+              <h3 className="mb-1 text-sm font-semibold text-text-primary">Multi-Step</h3>
+              <p className="text-sm leading-relaxed text-text-tertiary">
+                Chained tool execution where AI uses multiple tools in sequence.
+              </p>
+            </Link>
+
             {/* Recipes / Structured Data Card */}
             <Link
               href="/ui/structured-data"
@@ -250,7 +286,7 @@ export default function Home() {
       {/* ─── TECH STACK BADGE ROW ─── */}
       <section className="px-4 pb-8 sm:px-6 sm:pb-12">
         <div className="mx-auto flex max-w-2xl flex-wrap items-center justify-center gap-2">
-          {["Next.js", "React", "Tailwind CSS", "Vercel AI SDK", "Gemini", "TypeScript", "Zod"].map(
+          {["Next.js", "React", "Tailwind CSS", "Vercel AI SDK", "Gemini", "Tool Calling", "Streaming", "Structured Outputs", "TTS", "TypeScript", "Zod", "Firemoon", "Flux"].map(
             (tech) => (
               <span
                 key={tech}
@@ -311,6 +347,12 @@ export default function Home() {
               </Link>
               <Link href="/ui/tts" className="text-xs text-text-tertiary hover:text-text-primary transition-colors duration-200">
                 TTS
+              </Link>
+              <Link href="/ui/tools" className="text-xs text-text-tertiary hover:text-text-primary transition-colors duration-200">
+                Tools
+              </Link>
+              <Link href="/ui/multi-step-tool" className="text-xs text-text-tertiary hover:text-text-primary transition-colors duration-200">
+                Multi-Step
               </Link>
             </div>
 

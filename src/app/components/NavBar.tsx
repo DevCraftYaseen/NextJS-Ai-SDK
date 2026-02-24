@@ -13,6 +13,8 @@ const navGroups = [
       { href: "/ui/completion", label: "Completion", desc: "Single AI response" },
       { href: "/ui/stream", label: "Stream", desc: "Real-time streaming" },
       { href: "/ui/chat", label: "Chat", desc: "Multi-turn conversation" },
+      { href: "/ui/tools", label: "Tools", desc: "AI with tool calling" },
+      { href: "/ui/multi-step-tool", label: "Multi-Step", desc: "Chained tool execution" },
     ],
   },
   {
