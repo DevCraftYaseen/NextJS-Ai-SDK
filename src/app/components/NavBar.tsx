@@ -16,6 +16,7 @@ const navGroups = [
       { href: "/ui/tools", label: "Tools", desc: "AI with tool calling" },
       { href: "/ui/multi-step-tool", label: "Multi-Step", desc: "Chained tool execution" },
       { href: "/ui/weather-api", label: "Weather", desc: "Real-time weather lookup" },
+      { href: "/ui/web-search-tool", label: "Web Search", desc: "Google search with AI" },
     ],
   },
   {
@@ -218,6 +219,19 @@ export default function NavBar() {
               </div>
             </div>
           ))}
+          <div className="mb-3">
+            <div className="mb-1 px-3 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
+              Links
+            </div>
+            <div className="space-y-0.5">
+              <Link href="/ui/weather-api" className="text-xs text-text-tertiary hover:text-text-primary transition-colors duration-200">
+                Weather
+              </Link>
+              <Link href="/ui/web-search-tool" className="text-xs text-text-tertiary hover:text-text-primary transition-colors duration-200">
+                Web Search
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </nav>
