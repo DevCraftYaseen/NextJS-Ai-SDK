@@ -146,6 +146,24 @@ export default function Home() {
               </p>
             </Link>
 
+            {/* Weather API Card */}
+            <Link
+              href="/ui/weather-api"
+              className="group animate-fade-in-up rounded-xl border border-border bg-surface-raised p-5 text-left transition-all duration-200 hover:border-accent/30 hover:shadow-sm"
+              style={{ animationDelay: "0.4s", animationFillMode: "backwards" }}
+            >
+              <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-blue-100 text-blue-600 transition-transform duration-200 group-hover:scale-110">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="5" />
+                  <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+                </svg>
+              </div>
+              <h3 className="mb-1 text-sm font-semibold text-text-primary">Weather</h3>
+              <p className="text-sm leading-relaxed text-text-tertiary">
+                Real-time weather lookup for any city with beautiful themed cards.
+              </p>
+            </Link>
+
             {/* Recipes / Structured Data Card */}
             <Link
               href="/ui/structured-data"
@@ -353,6 +371,9 @@ export default function Home() {
               </Link>
               <Link href="/ui/multi-step-tool" className="text-xs text-text-tertiary hover:text-text-primary transition-colors duration-200">
                 Multi-Step
+              </Link>
+              <Link href="/ui/weather-api" className="text-xs text-text-tertiary hover:text-text-primary transition-colors duration-200">
+                Weather
               </Link>
             </div>
 

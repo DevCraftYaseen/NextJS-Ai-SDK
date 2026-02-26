@@ -7,7 +7,6 @@ export type ChatTools = InferUITools<typeof tools>
 export type ChatMessage = UIMessage<never, UIDataTypes, ChatTools>
 
 const tools = {
-    
     getLocation: tool({
         description: "Call this when you want to know location of a person/user or famous object",
         inputSchema: z.object({

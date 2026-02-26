@@ -15,6 +15,7 @@ const navGroups = [
       { href: "/ui/chat", label: "Chat", desc: "Multi-turn conversation" },
       { href: "/ui/tools", label: "Tools", desc: "AI with tool calling" },
       { href: "/ui/multi-step-tool", label: "Multi-Step", desc: "Chained tool execution" },
+      { href: "/ui/weather-api", label: "Weather", desc: "Real-time weather lookup" },
     ],
   },
   {
