@@ -182,6 +182,24 @@ export default function Home() {
               </p>
             </Link>
 
+            {/* MCP Tools Card */}
+            <Link
+              href="/ui/mcp-tools"
+              className="group animate-fade-in-up rounded-xl border border-border bg-surface-raised p-5 text-left transition-all duration-200 hover:border-accent/30 hover:shadow-sm"
+              style={{ animationDelay: "0.45s", animationFillMode: "backwards" }}
+            >
+              <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600 transition-transform duration-200 group-hover:scale-110">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                  <polyline points="17 6 23 6 23 12" />
+                </svg>
+              </div>
+              <h3 className="mb-1 text-sm font-semibold text-text-primary">MCP Tools</h3>
+              <p className="text-sm leading-relaxed text-text-tertiary">
+                Model Context Protocol tools for stock prices and more.
+              </p>
+            </Link>
+
             {/* Recipes / Structured Data Card */}
             <Link
               href="/ui/structured-data"
@@ -278,6 +296,25 @@ export default function Home() {
               </p>
             </Link>
 
+            {/* Image Gen Tool Card */}
+            <Link
+              href="/ui/gen-img-tool"
+              className="group animate-fade-in-up rounded-xl border border-border bg-surface-raised p-5 text-left transition-all duration-200 hover:border-accent/30 hover:shadow-sm"
+              style={{ animationDelay: "0.725s", animationFillMode: "backwards" }}
+            >
+              <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-violet-100 text-violet-600 transition-transform duration-200 group-hover:scale-110">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/>
+                  <path d="M21 15l-5-5L5 21"/>
+                </svg>
+              </div>
+              <h3 className="mb-1 text-sm font-semibold text-text-primary">Image Gen Tool</h3>
+              <p className="text-sm leading-relaxed text-text-tertiary">
+                AI image generation with tool calling and streaming states.
+              </p>
+            </Link>
+
             {/* Transcribe Audio Card */}
             <Link
               href="/ui/transcribe-audio"
@@ -322,7 +359,7 @@ export default function Home() {
       {/* ─── TECH STACK BADGE ROW ─── */}
       <section className="px-4 pb-8 sm:px-6 sm:pb-12">
         <div className="mx-auto flex max-w-2xl flex-wrap items-center justify-center gap-2">
-          {["Next.js", "React", "Tailwind CSS", "Vercel AI SDK", "Gemini", "Tool Calling", "Streaming", "Structured Outputs", "TTS", "TypeScript", "Zod", "Firemoon", "Flux"].map(
+          {["Next.js", "React", "Tailwind CSS", "Vercel AI SDK", "Gemini", "Tool Calling", "MCP", "Streaming", "Structured Outputs", "TTS", "TypeScript", "Zod", "Firemoon", "Flux"].map(
             (tech) => (
               <span
                 key={tech}
@@ -378,6 +415,9 @@ export default function Home() {
               <Link href="/ui/generate-image" className="text-xs text-text-tertiary hover:text-text-primary transition-colors duration-200">
                 Image Gen
               </Link>
+              <Link href="/ui/gen-img-tool" className="text-xs text-text-tertiary hover:text-text-primary transition-colors duration-200">
+                Image Gen Tool
+              </Link>
               <Link href="/ui/transcribe-audio" className="text-xs text-text-tertiary hover:text-text-primary transition-colors duration-200">
                 Transcribe
               </Link>
@@ -395,6 +435,9 @@ export default function Home() {
               </Link>
               <Link href="/ui/web-search-tool" className="text-xs text-text-tertiary hover:text-text-primary transition-colors duration-200">
                 Web Search
+              </Link>
+              <Link href="/ui/mcp-tools" className="text-xs text-text-tertiary hover:text-text-primary transition-colors duration-200">
+                MCP Tools
               </Link>
             </div>
 

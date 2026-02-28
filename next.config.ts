@@ -7,7 +7,12 @@ const nextConfig: NextConfig = {
   images: {
     // Allow data: URLs for base64-encoded image attachments in multi-modal chat
     dangerouslyAllowSVG: true,
-    remotePatterns: [],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "ik.imagekit.io",
+      },
+    ],
   },
 };
 

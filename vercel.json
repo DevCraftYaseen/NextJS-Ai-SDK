@@ -2,6 +2,15 @@
   "functions": {
     "src/app/api/generate-image/route.ts": {
       "maxDuration": 60
+    },
+    "src/app/api/gen-img-tool/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/client-side-tool/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/mcp-tools/route.ts": {
+      "maxDuration": 80
     }
   }
 }

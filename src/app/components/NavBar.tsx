@@ -17,6 +17,7 @@ const navGroups = [
       { href: "/ui/multi-step-tool", label: "Multi-Step", desc: "Chained tool execution" },
       { href: "/ui/weather-api", label: "Weather", desc: "Real-time weather lookup" },
       { href: "/ui/web-search-tool", label: "Web Search", desc: "Google search with AI" },
+      { href: "/ui/mcp-tools", label: "MCP Tools", desc: "Model Context Protocol tools" },
     ],
   },
   {
@@ -25,6 +26,7 @@ const navGroups = [
     items: [
       { href: "/ui/multi-modal-chat", label: "Vision Chat", desc: "Image + text input" },
       { href: "/ui/generate-image", label: "Image Gen", desc: "AI image generation" },
+      { href: "/ui/gen-img-tool", label: "Image Gen Tool", desc: "Tool-based image generation" },
     ],
   },
   {
